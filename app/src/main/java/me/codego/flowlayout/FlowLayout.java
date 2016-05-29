@@ -11,6 +11,8 @@ import android.widget.FrameLayout;
  */
 public class FlowLayout extends FrameLayout {
 
+    private int divideHeight;
+
     public FlowLayout(Context context) {
         super(context);
     }
@@ -36,16 +38,20 @@ public class FlowLayout extends FrameLayout {
             int childHeight = childView.getMeasuredHeight();
             LayoutParams params = (LayoutParams) childView.getLayoutParams();
             if (maxWidth + childWidth > parentWidth) {
-                maxHeight += lineHeight;
+                maxHeight += lineHeight + divideHeight;
                 params.topMargin = maxHeight;
                 params.leftMargin = 0;
-                maxWidth = childWidth;
+                maxWidth = childWidth + divideHeight;
             } else {
                 params.leftMargin = maxWidth;
                 params.topMargin = maxHeight;
-                maxWidth += childWidth;
+                maxWidth += childWidth + divideHeight;
             }
             lineHeight = Math.max(lineHeight, childHeight);
         }
+    }
+
+    public void setDivideHeight(int divideHeight) {
+        this.divideHeight = divideHeight;
     }
 }
