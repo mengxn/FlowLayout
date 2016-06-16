@@ -1,6 +1,7 @@
 package me.codego.flowlayout;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -11,14 +12,20 @@ import android.widget.FrameLayout;
  */
 public class FlowLayout extends FrameLayout {
 
-    private int divideHeight;
+    private int horizontalSpacing;
+    private int verticalSpacing;
 
     public FlowLayout(Context context) {
-        super(context);
+        this(context, null);
     }
 
     public FlowLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.FlowLayout);
+        horizontalSpacing = typedArray.getDimensionPixelOffset(R.styleable.FlowLayout_horizontalSpacing, 0);
+        verticalSpacing = typedArray.getDimensionPixelOffset(R.styleable.FlowLayout_verticalSpacing, 0);
+        typedArray.recycle();
     }
 
     @Override
@@ -38,20 +45,24 @@ public class FlowLayout extends FrameLayout {
             int childHeight = childView.getMeasuredHeight();
             LayoutParams params = (LayoutParams) childView.getLayoutParams();
             if (maxWidth + childWidth > parentWidth) {
-                maxHeight += lineHeight + divideHeight;
+                maxHeight += lineHeight + verticalSpacing;
                 params.topMargin = maxHeight;
                 params.leftMargin = 0;
-                maxWidth = childWidth + divideHeight;
+                maxWidth = childWidth + horizontalSpacing;
             } else {
                 params.leftMargin = maxWidth;
                 params.topMargin = maxHeight;
-                maxWidth += childWidth + divideHeight;
+                maxWidth += childWidth + horizontalSpacing;
             }
             lineHeight = Math.max(lineHeight, childHeight);
         }
     }
 
-    public void setDivideHeight(int divideHeight) {
-        this.divideHeight = divideHeight;
+    public void setHorizontalSpacing(int horizontalSpacing) {
+        this.horizontalSpacing = horizontalSpacing;
+    }
+
+    public void setVerticalSpacing(int verticalSpacing) {
+        this.verticalSpacing = verticalSpacing;
     }
 }

@@ -15,7 +15,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         flowLayout = (FlowLayout) findViewById(R.id.flow_layout);
-        flowLayout.setDivideHeight(30);
 
         flowLayout.addView(initTag("hello world !"));
         flowLayout.addView(initTag("welcome to my world !"));
