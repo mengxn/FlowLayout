@@ -1,4 +1,4 @@
-package me.codego.flowlayout;
+package me.codego.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
