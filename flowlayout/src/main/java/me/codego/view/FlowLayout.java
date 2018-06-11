@@ -56,6 +56,8 @@ public class FlowLayout extends FrameLayout {
             }
             lineHeight = Math.max(lineHeight, childHeight);
         }
+        maxHeight += lineHeight;
+        setMeasuredDimension(widthMeasureSpec, MeasureSpec.makeMeasureSpec(maxHeight + getPaddingTop() + getPaddingBottom(), MeasureSpec.EXACTLY));
     }
 
     public void setHorizontalSpacing(int horizontalSpacing) {
