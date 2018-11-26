@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 /**
@@ -21,7 +22,6 @@ public class FlowLayout extends FrameLayout {
 
     public FlowLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.FlowLayout);
         horizontalSpacing = typedArray.getDimensionPixelOffset(R.styleable.FlowLayout_horizontalSpacing, 0);
         verticalSpacing = typedArray.getDimensionPixelOffset(R.styleable.FlowLayout_verticalSpacing, 0);
@@ -30,34 +30,43 @@ public class FlowLayout extends FrameLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        final int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        if (MeasureSpec.EXACTLY == widthMode) {
+            final int limitWidth = MeasureSpec.getSize(widthMeasureSpec) - getPaddingLeft() - getPaddingRight();
+            int marginTop = 0;
+            int marginStart = 0;
+            int itemHeight = 0;
+            for (int i = 0; i < getChildCount(); i++) {
+                final View child = getChildAt(i);
+                final ViewGroup.MarginLayoutParams layoutParams = (MarginLayoutParams) child.getLayoutParams();
+                int childWidth = child.getMeasuredWidth();
+                int childHeight = child.getMeasuredHeight();
+                if (childWidth == 0 || childHeight == 0) {
+                    // child height should not be LayoutParams.WRAP_CONTENT, so we change it
+                    if (layoutParams.height == LayoutParams.MATCH_PARENT) {
+                        layoutParams.height = LayoutParams.WRAP_CONTENT;
+                    }
+                    child.measure(getChildMeasureSpec(widthMeasureSpec, getPaddingLeft() + getPaddingRight(), layoutParams.width),
+                            getChildMeasureSpec(widthMeasureSpec, getPaddingTop() + getPaddingBottom(), layoutParams.height));
+                    childWidth = child.getMeasuredWidth();
+                    childHeight = child.getMeasuredHeight();
+                }
+                itemHeight = Math.max(itemHeight, childHeight);
 
-        int parentWidth = getMeasuredWidth();
+                if (marginStart + childWidth + horizontalSpacing > limitWidth) {
+                    marginTop += (itemHeight + verticalSpacing);
+                    marginStart = 0;
+                    itemHeight = childHeight;
+                }
 
-        int maxWidth = 0;
-        int maxHeight = 0;
-        int lineHeight = 0;
+                layoutParams.leftMargin = marginStart;
+                layoutParams.topMargin = marginTop;
 
-        for (int i = 0; i < getChildCount(); i++) {
-            View childView = getChildAt(i);
-            childView.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-            int childWidth = childView.getMeasuredWidth();
-            int childHeight = childView.getMeasuredHeight();
-            LayoutParams params = (LayoutParams) childView.getLayoutParams();
-            if (maxWidth + childWidth > parentWidth) {
-                maxHeight += lineHeight + verticalSpacing;
-                params.topMargin = maxHeight;
-                params.leftMargin = 0;
-                maxWidth = childWidth + horizontalSpacing;
-            } else {
-                params.leftMargin = maxWidth;
-                params.topMargin = maxHeight;
-                maxWidth += childWidth + horizontalSpacing;
+                marginStart += (childWidth + horizontalSpacing);
             }
-            lineHeight = Math.max(lineHeight, childHeight);
         }
-        maxHeight += lineHeight;
-        setMeasuredDimension(widthMeasureSpec, MeasureSpec.makeMeasureSpec(maxHeight + getPaddingTop() + getPaddingBottom(), MeasureSpec.EXACTLY));
+
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     public void setHorizontalSpacing(int horizontalSpacing) {
