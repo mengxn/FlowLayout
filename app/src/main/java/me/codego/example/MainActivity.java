@@ -2,6 +2,7 @@ package me.codego.example;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         flowLayout = findViewById(R.id.flow_layout);
+        flowLayout.setGravity(Gravity.CENTER_HORIZONTAL);
 
         for (String tag : tags) {
             flowLayout.addView(initTag(tag));
