@@ -11,6 +11,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 
+import me.codego.view.flow.R;
+
 /**
  * 流式布局FlowLayout
  * Created by mengxn on 16/5/10.
